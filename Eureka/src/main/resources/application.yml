@@ -1,3 +1,11 @@
 spring:
   application:
     name: ms_eureka
+
+server:
+  port: 8761	
+
+eureka:
+  client:
+    register-with-eureka: false # não se registra nele mesmo
+    fetch-registry: false

@@ -9,7 +9,7 @@
 		<version>3.4.5</version>
 		<relativePath />
 	</parent>
-	<groupId>com.vinix</groupId>
+	<groupId>vinix.com</groupId>
 	<artifactId>Eureka</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Eureka</name>
