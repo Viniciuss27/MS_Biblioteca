@@ -22,8 +22,8 @@ public class ConfigServerApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("TOKEN: " + pass);
-		System.out.println("USERNAME: " + name);
+		/*System.out.println("TOKEN: " + pass);
+		System.out.println("USERNAME: " + name);*/
 		
 	}
 
