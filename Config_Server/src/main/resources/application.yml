@@ -1,3 +1,18 @@
 spring:
   application:
-    name: config
+    name: config-server
+
+  config:
+    import: optional:file:../.env[.properties]  # para buscar .env na raiz do projeto
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/viniciuss27/MS_Config
+          default-label: main
+          username: ${GIT_USERNAME} 
+          password: ${GIT_PASSWORD}  
+
+server:
+  port: 8888
