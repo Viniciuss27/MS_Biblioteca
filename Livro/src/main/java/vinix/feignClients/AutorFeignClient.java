@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import vinix.entities.Autor;
+import vinix.entities.DTO.AutorDTO;
 
 @FeignClient(
 		name = "autor",
@@ -14,6 +14,6 @@ import vinix.entities.Autor;
 public interface AutorFeignClient {
 	
 	@GetMapping(value = "/{id}")
-	ResponseEntity<Autor> findById(@PathVariable Long id);
+	ResponseEntity<AutorDTO> findById(@PathVariable Long id);
 
 }
