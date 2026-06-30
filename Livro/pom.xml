@@ -28,7 +28,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
+
 		<!--Jpa-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -59,13 +59,20 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<!--Validador-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-		
+
+		<!--H2-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!--Config-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

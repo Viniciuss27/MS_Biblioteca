@@ -1,18 +1,21 @@
 spring:
   application:
     name: livro
+
   profiles:
     active: test
+
   config:
     import: optional:configserver:http://localhost:8888
 
-  cloud:
-    openfeign:
-      circuitbreaker:
-        enabled: true
+  jpa:
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
 server:
-  port: ${port:0}  
+  port: ${port:0}
 
 eureka:
   instance:
@@ -22,17 +25,24 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+feign:
+  circuitbreaker:
+    enabled: true
+
 resilience4j:
   circuitbreaker:
     instances:
-      hr-worker:
-        sliding-window-size: 10
-        minimum-number-of-calls: 2
+      ms-livro:
+        sliding-window-size: 5
         failure-rate-threshold: 50
-        wait-duration-in-open-state: 5s
+        wait-duration-in-open-state: 10s
+      ms-usuario:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
 
-feign:
-  client:
-    config:
-      default:
-        decode404: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

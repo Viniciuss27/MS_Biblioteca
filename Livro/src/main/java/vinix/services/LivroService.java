@@ -1,82 +1,88 @@
 package vinix.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
 import vinix.entities.Livro;
-import vinix.entities.DTO.LivroDTO;
 import vinix.repositories.LivroRepository;
 import vinix.services.exceptions.DataBaseException;
 import vinix.services.exceptions.ResourceNotFoundException;
 
 @Service
-@RequiredArgsConstructor
 public class LivroService {
 
-    private final LivroRepository repository;
+    @Autowired
+    private LivroRepository repository;
 
-    @Transactional(readOnly = true)
-    public List<LivroDTO> findAll() {
-        return repository.findAll().stream().map(LivroDTO::new).collect(Collectors.toList());
+    public List<Livro> findAll() {
+        return repository.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public LivroDTO findById(Long id) {
-        Livro entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado com o ID: " + id));
-        return new LivroDTO(entity);
+    public Livro findById(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    @Transactional(readOnly = true)
-    public LivroDTO findByIsbn(String isbn) {
-        Livro entity = repository.findByIsbn(isbn)
-                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado com o ISBN: " + isbn));
-        return new LivroDTO(entity);
+    public Livro findByIsbn(String isbn) {
+        return repository.findByIsbn(isbn)
+            .orElseThrow(() -> new ResourceNotFoundException(isbn));
     }
 
-    @Transactional(readOnly = true)
-    public List<LivroDTO> findDisponiveis() {
-        return repository.findDisponiveis().stream().map(LivroDTO::new).collect(Collectors.toList());
+    public List<Livro> findByCategoria(String categoria) {
+        return repository.findByCategoria(categoria);
     }
 
-    @Transactional
-    public LivroDTO insert(LivroDTO dto) {
-        Livro entity = new Livro();
-        copyDtoToEntity(dto, entity);
-        entity = repository.save(entity);
-        return new LivroDTO(entity);
+    public List<Livro> findDisponiveis() {
+        return repository.findByQuantidadeDisponivelGreaterThan(0);
     }
 
-    @Transactional
-    public void debitarEstoque(Long id) {
-        Livro livro = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado para baixa"));
+    public Livro insert(Livro livro) {
+        return repository.save(livro);
+    }
+
+    public Livro update(Long id, Livro obj) {
+        try {
+            Livro entity = repository.getReferenceById(id);
+            entity.setTitulo(obj.getTitulo());
+            entity.setIsbn(obj.getIsbn());
+            entity.setEditora(obj.getEditora());
+            entity.setAnoPublicacao(obj.getAnoPublicacao());
+            entity.setCategoria(obj.getCategoria());
+            entity.setQuantidadeTotal(obj.getQuantidadeTotal());
+            entity.setAutores(obj.getAutores());
+            return repository.save(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(id);
+        }
+    }
+
+    public void delete(Long id) {
+        try {
+            if (!repository.existsById(id)) throw new ResourceNotFoundException(id);
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataBaseException(e.getMessage());
+        }
+    }
+
+    // Chamado pelo ms-emprestimo via Feign
+    public void emprestar(Long id) {
+        Livro livro = findById(id);
         if (livro.getQuantidadeDisponivel() <= 0) {
-            throw new DataBaseException("Estoque zerado para o livro selecionado.");
+            throw new DataBaseException("Livro sem exemplares disponíveis!");
         }
         livro.setQuantidadeDisponivel(livro.getQuantidadeDisponivel() - 1);
         repository.save(livro);
     }
 
-    @Transactional
-    public void creditarEstoque(Long id) {
-        Livro livro = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado para devolução"));
+    // Chamado pelo ms-emprestimo via Feign
+    public void devolver(Long id) {
+        Livro livro = findById(id);
         livro.setQuantidadeDisponivel(livro.getQuantidadeDisponivel() + 1);
         repository.save(livro);
-    }
-
-    private void copyDtoToEntity(LivroDTO dto, Livro entity) {
-        entity.setTitulo(dto.getTitulo());
-        entity.setIsbn(dto.getIsbn());
-        entity.setEditora(dto.getEditora());
-        entity.setAnoPublicacao(dto.getAnoPublicacao());
-        entity.setCategoria(dto.getCategoria());
-        entity.setQuantidadeTotal(dto.getQuantidadeTotal());
-        entity.setQuantidadeDisponivel(dto.getQuantidadeDisponivel());
     }
 }
