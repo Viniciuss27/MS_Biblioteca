@@ -1,5 +1,3 @@
-INSERT INTO tb_autor (nome, nacionalidade) VALUES ('Robert C. Martin', 'Americano');
-INSERT INTO tb_autor (nome, nacionalidade) VALUES ('Eric Evans', 'Americano');
-INSERT INTO tb_livro_autor (livro_id, autor_id) VALUES (1, 1);
-INSERT INTO tb_livro_autor (livro_id, autor_id) VALUES (2, 2);
- 
+INSERT INTO tb_autor (nome, nacionalidade, biografia) VALUES ('Robert C. Martin', 'Americano', 'Engenheiro de software e autor de Clean Code');
+INSERT INTO tb_autor (nome, nacionalidade, biografia) VALUES ('Eric Evans', 'Americano', 'Criador do Domain-Driven Design');
+INSERT INTO tb_autor (nome, nacionalidade, biografia) VALUES ('Martin Fowler', 'Britânico', 'Especialista em refatoração');
