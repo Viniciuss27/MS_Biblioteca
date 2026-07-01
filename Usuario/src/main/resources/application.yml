@@ -1,1 +1,32 @@
-spring.application.name=Usuario
+spring:
+  application:
+    name: usuario
+
+  profiles:
+    active: test
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  jpa:
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
+server:
+  port: ${port:0}
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
